@@ -1,0 +1,6 @@
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\bin\Debug\RightClickCopyFileName.exe
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\bin\Debug\RightClickCopyFileName.pdb
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.csproj.AssemblyReference.cache
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.csproj.CoreCompileInputs.cache
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.exe
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.pdb
