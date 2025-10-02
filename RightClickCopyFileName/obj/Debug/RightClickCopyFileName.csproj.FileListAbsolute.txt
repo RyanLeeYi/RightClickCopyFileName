@@ -4,3 +4,4 @@ C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFil
 C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.csproj.CoreCompileInputs.cache
 C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.exe
 C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\obj\Debug\RightClickCopyFileName.pdb
+C:\Users\003730\Desktop\測試用專案\RightClickCopyFileName\RightClickCopyFileName\bin\Debug\main.js

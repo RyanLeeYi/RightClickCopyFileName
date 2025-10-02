@@ -22,6 +22,15 @@ namespace RightclickCopyFileName
         private const string MenuName3 = "dllfile\\shell\\CheckDllFileBase";
         private const string Command3 = "dllfile\\shell\\CheckDllFileBase\\command";
 
+        private const string MenuName_DecodeCsFile = "*\\shell\\DecodeCsFile";
+        private const string Command_DecodeCsFile = "*\\shell\\DecodeCsFile\\command";
+
+        private const string MenuName_DecodeCsFile_Folder = "Directory\\shell\\DecodeCsFileFolder";
+        private const string Command_DecodeCsFile_Folder = "Directory\\shell\\DecodeCsFileFolder\\command";
+
+        private const string MenuName_DecodeCsFile_SubFolder = "Directory\\shell\\DecodeCsFileSubFolder";
+        private const string Command_DecodeCsFile_SubFolder = "Directory\\shell\\DecodeCsFileSubFolder\\command";
+
         private static string fileName = "";
         private static string fileFullName = "";
         static void Main(string[] args)
@@ -31,6 +40,9 @@ namespace RightclickCopyFileName
                 建立系統右鍵選單();
                 建立系統右鍵選單_GetFullName();
                 建立系統右鍵選單_CheckDllFileBase();
+                建立系統右鍵選單_DecodeCsFile();
+                建立系統右鍵選單_DecodeCsFile_Folder();
+                建立系統右鍵選單_DecodeCsFile_SubFolder();
             }
             else
             {
@@ -75,6 +87,23 @@ namespace RightclickCopyFileName
                     }
                 }
 
+                if (args.Contains("-decodefile"))
+                {
+                    var filefullPath = args.Last();
+                    解譯單一檔案(filefullPath);
+                }
+
+                if (args.Contains("-decodefolder"))
+                {
+                    var folderPath = args.Last();
+                    解譯資料夾(folderPath);
+                }
+
+                if (args.Contains("-decodesubfolder"))
+                {
+                    var folderPath = args.Last();
+                    解譯資料夾及子資料夾(folderPath);
+                }
 
                 if (args.Contains("-p"))
                 {
@@ -184,10 +213,197 @@ namespace RightclickCopyFileName
             }
 
         }
+        private static void 建立系統右鍵選單_DecodeCsFile()
+        {
+            RegistryKey regmenu = null;
+            RegistryKey regcmd = null;
+            string exe = Assembly.GetExecutingAssembly().Location;
+            try
+            {
+                regmenu = Registry.ClassesRoot.CreateSubKey(MenuName_DecodeCsFile);
+                if (regmenu != null)
+                    regmenu.SetValue("", "解譯單一CS檔案");//設定右鍵顯示名稱
+                regcmd = Registry.ClassesRoot.CreateSubKey(Command_DecodeCsFile);
+                if (regcmd != null)
+                    regcmd.SetValue("", $"\"{exe}\" -decodefile \"%1\"");//設定cmd指令
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+            finally
+            {
+                if (regmenu != null)
+                    regmenu.Close();
+                if (regcmd != null)
+                    regcmd.Close();
+            }
+        }
+        private static void 建立系統右鍵選單_DecodeCsFile_Folder()
+        {
+            RegistryKey regmenu = null;
+            RegistryKey regcmd = null;
+            string exe = Assembly.GetExecutingAssembly().Location;
+            try
+            {
+                regmenu = Registry.ClassesRoot.CreateSubKey(MenuName_DecodeCsFile_Folder);
+                if (regmenu != null)
+                    regmenu.SetValue("", "解譯資料夾內CS檔案");//設定右鍵顯示名稱
+                regcmd = Registry.ClassesRoot.CreateSubKey(Command_DecodeCsFile_Folder);
+                if (regcmd != null)
+                    regcmd.SetValue("", $"\"{exe}\" -decodefolder \"%1\"");//設定cmd指令
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+            finally
+            {
+                if (regmenu != null)
+                    regmenu.Close();
+                if (regcmd != null)
+                    regcmd.Close();
+            }
+        }
+        private static void 建立系統右鍵選單_DecodeCsFile_SubFolder()
+        {
+            RegistryKey regmenu = null;
+            RegistryKey regcmd = null;
+            string exe = Assembly.GetExecutingAssembly().Location;
+            try
+            {
+                regmenu = Registry.ClassesRoot.CreateSubKey(MenuName_DecodeCsFile_SubFolder);
+                if (regmenu != null)
+                    regmenu.SetValue("", "解譯資料夾(含子資料夾)內CS檔案");//設定右鍵顯示名稱
+                regcmd = Registry.ClassesRoot.CreateSubKey(Command_DecodeCsFile_SubFolder);
+                if (regcmd != null)
+                    regcmd.SetValue("", $"\"{exe}\" -decodesubfolder \"%1\"");//設定cmd指令
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.ReadKey();
+            }
+            finally
+            {
+                if (regmenu != null)
+                    regmenu.Close();
+                if (regcmd != null)
+                    regcmd.Close();
+            }
+        }
         private static void SetCopyText()
         {
             Clipboard.SetText(fileName);
         }
+
+        private static void 解譯單一檔案(string filePath)
+        {
+            try
+            {
+                // 取得程式所在目錄
+                string exePath = Assembly.GetExecutingAssembly().Location;
+                string exeDir = Path.GetDirectoryName(exePath);
+                string mainJsPath = Path.Combine(exeDir, "main.js");
+
+                if (!File.Exists(mainJsPath))
+                {
+                    MessageBox.Show($"找不到 main.js 檔案於: {mainJsPath}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // 建立 PowerShell 命令
+                string command = $"node \"{mainJsPath}\" -f \"{filePath}\"";
+                
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = $"-Command \"{command}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = exeDir
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"執行解譯單一檔案時發生錯誤: {ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void 解譯資料夾(string folderPath)
+        {
+            try
+            {
+                // 取得程式所在目錄
+                string exePath = Assembly.GetExecutingAssembly().Location;
+                string exeDir = Path.GetDirectoryName(exePath);
+                string mainJsPath = Path.Combine(exeDir, "main.js");
+
+                if (!File.Exists(mainJsPath))
+                {
+                    MessageBox.Show($"找不到 main.js 檔案於: {mainJsPath}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // 建立 PowerShell 命令
+                string command = $"node \"{mainJsPath}\" -s \"{folderPath}\"";
+                
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = $"-Command \"{command}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = exeDir
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"執行解譯資料夾時發生錯誤: {ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static void 解譯資料夾及子資料夾(string folderPath)
+        {
+            try
+            {
+                // 取得程式所在目錄
+                string exePath = Assembly.GetExecutingAssembly().Location;
+                string exeDir = Path.GetDirectoryName(exePath);
+                string mainJsPath = Path.Combine(exeDir, "main.js");
+
+                if (!File.Exists(mainJsPath))
+                {
+                    MessageBox.Show($"找不到 main.js 檔案於: {mainJsPath}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // 建立 PowerShell 命令（加入 -r 參數啟用遞迴模式）
+                string command = $"node \"{mainJsPath}\" -s \"{folderPath}\" -r";
+                
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = "powershell.exe",
+                    Arguments = $"-Command \"{command}\"",
+                    UseShellExecute = false,
+                    CreateNoWindow = false,
+                    WorkingDirectory = exeDir
+                };
+
+                Process.Start(psi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"執行解譯資料夾及子資料夾時發生錯誤: {ex.Message}", "錯誤", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
         private static void ShowFileBitVersionByPowershell()
         {
             try
